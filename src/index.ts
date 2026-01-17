@@ -1,6 +1,7 @@
-import { DataLoader } from './utils/DataLoader';
+import app from './app';
 
-const dataLoader = new DataLoader();
-dataLoader.loadDataFromCsv();
+const PORT = process.env.PORT || 3000;
 
-console.log('Rodando...');
+app.listen(PORT, () => {
+    console.log(`API disponível em http://localhost: na porta ${PORT}`);
+});
