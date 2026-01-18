@@ -68,6 +68,7 @@ Retorna os intervalos mínimo e máximo entre prêmios consecutivos por produtor
 
 **Exemplo de response 200:**
 
+```json
 {
   "min": [
     {
@@ -86,6 +87,8 @@ Retorna os intervalos mínimo e máximo entre prêmios consecutivos por produtor
     }
   ]
 }
+```
+
 
 **Descrição:**
 **min[]:** Array de intervalos mínimos
@@ -103,11 +106,12 @@ Endpoint de health check para monitoramento.
 
 Exemplo com response 200:
 
+```json
 {
   "status": "ok",
   "timestamp": "2026-01-18T15:45:06.916Z"
 }
-
+```
 
 * GET "/"
 
@@ -115,6 +119,7 @@ Endpoint raiz com informações da API.
 
 Exemplo com response 200:
 
+```json
 {
   "message": "API de intervalos de prêmios de filmes",
   "routes": [
@@ -130,7 +135,7 @@ Exemplo com response 200:
     }
   ]
 }
-
+```
 
 
 
@@ -160,8 +165,8 @@ Poderia ser feito de uma maneira mais "Monolito", e conforme a complexidade e es
 
 Como está funciona assim: Controllers/Routes -> Services -> Repositories -> DataLoader.
 
-Controllers/Routes: Recebe as requisições e retorna reposta em json.
-Services: Cálculos, regras e filtros.
-Repositories: Acessa dados da memória e filtragem.
-DataLoader: Carrega os dados do csv, faz parsing e normaliza valores, popula repositórios.
+Controllers/Routes: Recebe as requisições e retorna reposta em json.  
+Services: Cálculos, regras e filtros.  
+Repositories: Acessa dados da memória e filtragem.  
+DataLoader: Carrega os dados do csv, faz parsing e normaliza valores, popula repositórios.  
 
