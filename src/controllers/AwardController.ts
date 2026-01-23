@@ -12,8 +12,10 @@ export class AwardController {
             return res.status(200).json(response);
         } catch (error) {
             console.error('Erro ao buscar intervalos:', error);
-            return res.status(500).json({ error: 'Erro ao buscar intervalos',
-                message: error instanceof Error ? error.message : 'Erro desconhecido' });
+            return res.status(500).json({
+                error: 'Erro ao buscar intervalos',
+                message: error instanceof Error ? error.message : 'Erro desconhecido',
+            });
         }
     }
 }

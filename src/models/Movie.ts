@@ -5,12 +5,12 @@ export interface Movie {
     studios: string;
     winner: boolean;
     producerIds: number[];
-  }
-  
-  export interface MovieToAdd {
+}
+
+export interface MovieToAdd {
     year: number;
     title: string;
     studios: string;
     winner: boolean;
     producerIds: number[];
-  }
+}

@@ -1,6 +1,7 @@
-import { MovieRepository } from "../repositories/MovieRepository";
-import { ProducerRepository } from "../repositories/ProducerRepository";
-import { AwardResponse, Interval } from "../models/AwardResponse";
+import { MovieRepository } from '../repositories/MovieRepository';
+import { ProducerRepository } from '../repositories/ProducerRepository';
+import { AwardResponse, Interval } from '../models/AwardResponse';
+import { Movie } from '../models/Movie';
 
 export class AwardService {
     constructor(
@@ -11,8 +12,8 @@ export class AwardService {
     getAwardIntervals(): AwardResponse {
         const winners = this.movieRepository.findByWinner(true);
 
-        if(winners.length === 0) {
-            return {min: [], max: []};
+        if (winners.length === 0) {
+            return { min: [], max: [] };
         }
 
         const producerYears = this.winnersByProducer(winners);
@@ -20,15 +21,14 @@ export class AwardService {
         const minInterval = this.calculateMinInterval(producerYears);
         const maxInterval = this.calculateMaxInterval(producerYears);
 
-        if(minInterval.length === 0 && maxInterval.length === 0) {
-            return {min: [], max: []};
+        if (minInterval.length === 0 && maxInterval.length === 0) {
+            return { min: [], max: [] };
         }
 
-        return {min: minInterval, max: maxInterval};
+        return { min: minInterval, max: maxInterval };
     }
 
-    private winnersByProducer(winners: any[]): Map<number, number[]> {
-
+    private winnersByProducer(winners: Movie[]): Map<number, number[]> {
         const producerYearsMap = new Map<number, number[]>();
 
         for (const movie of winners) {
@@ -41,7 +41,7 @@ export class AwardService {
             }
         }
 
-        for (const [_producerId, years] of producerYearsMap.entries()) {
+        for (const [, years] of producerYearsMap.entries()) {
             years.sort((a, b) => a - b);
         }
 
@@ -69,7 +69,7 @@ export class AwardService {
                     producer: producer.name,
                     interval,
                     previousWin,
-                    followingWin
+                    followingWin,
                 });
             }
         }
@@ -105,7 +105,7 @@ export class AwardService {
                     producer: producer.name,
                     interval,
                     previousWin,
-                    followingWin
+                    followingWin,
                 });
             }
         }
@@ -118,5 +118,4 @@ export class AwardService {
 
         return allIntervals.filter(i => i.interval === maxIntervalValue);
     }
-
 }

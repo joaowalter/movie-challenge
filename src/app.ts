@@ -25,7 +25,7 @@ app.get('/api/awards/award-intervals', (req, res) => {
 });
 
 app.get('/health', (_req, res) => {
-    res.json({ 
+    res.json({
         status: 'ok',
         timestamp: new Date().toISOString(),
     });
@@ -38,14 +38,14 @@ app.get('/', (_req, res) => {
             {
                 path: '/api/awards/award-intervals',
                 method: 'GET',
-                description: 'Retorna os intervalos de prêmios de filmes'
+                description: 'Retorna os intervalos de prêmios de filmes',
             },
             {
                 path: '/health',
                 method: 'GET',
-                description: 'Retorna o status da API'
-            }
-        ]
+                description: 'Retorna o status da API',
+            },
+        ],
     });
 });
 

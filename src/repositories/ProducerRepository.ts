@@ -1,71 +1,123 @@
+import Database from 'better-sqlite3';
 import { Producer, ProducerToAdd } from '../models/Producer';
 
 export class ProducerRepository {
-    private producers: Map<number, Producer> = new Map();
-    private producersNames: Map<string, Producer> = new Map();
-    private nextId = 1;
+    private db: Database.Database;
+
+    constructor(database: Database.Database) {
+        this.db = database;
+    }
 
     private normalizeName(name: string): string {
         return name.trim().toLowerCase();
     }
 
     save(producerToAdd: ProducerToAdd): Producer {
-        const normalizedName = this.normalizeName(producerToAdd.name);
-
-        const existProducerName = this.producersNames.get(normalizedName);
-
-        if (existProducerName) {
-            return existProducerName;
+        const existing = this.findByName(producerToAdd.name);
+        if (existing) {
+            return existing;
         }
 
-        const producer: Producer = {
-            id: this.nextId++,
+        const stmt = this.db.prepare('INSERT INTO producers (name) VALUES (?)');
+        const result = stmt.run(producerToAdd.name);
+        const producerId = result.lastInsertRowid as number;
+
+        const movieIds = this.getMovieIdsForProducer(producerId);
+
+        return {
+            id: producerId,
             name: producerToAdd.name,
-            movieIds: [],
+            movieIds,
         };
-
-        this.producers.set(producer.id, producer);
-        this.producersNames.set(normalizedName, producer);
-
-        return producer;
-        
     }
 
     findAll(): Producer[] {
-        return Array.from(this.producers.values());
+        const rows = this.db.prepare('SELECT * FROM producers').all() as Array<{
+            id: number;
+            name: string;
+        }>;
+
+        return rows.map(row => this.mapRowToProducer(row));
     }
-        
+
     findById(id: number): Producer | undefined {
-        return this.producers.get(id);
+        const row = this.db.prepare('SELECT * FROM producers WHERE id = ?').get(id) as
+            | {
+                  id: number;
+                  name: string;
+              }
+            | undefined;
+
+        if (!row) {
+            return undefined;
+        }
+
+        return this.mapRowToProducer(row);
     }
 
     findByName(name: string): Producer | undefined {
         const normalizedName = this.normalizeName(name);
-        return this.producersNames.get(normalizedName);
+
+        const row = this.db
+            .prepare('SELECT * FROM producers WHERE LOWER(TRIM(name)) = ?')
+            .get(normalizedName) as
+            | {
+                  id: number;
+                  name: string;
+              }
+            | undefined;
+
+        if (!row) {
+            return undefined;
+        }
+
+        return this.mapRowToProducer(row);
     }
 
     addMovie(producerId: number, movieId: number): void {
-        const producer = this.producers.get(producerId);
-        if (producer && !producer.movieIds.includes(movieId)) {
-            producer.movieIds.push(movieId);
-          }
-    }
+        const existing = this.db
+            .prepare('SELECT 1 FROM movie_producers WHERE movie_id = ? AND producer_id = ?')
+            .get(movieId, producerId);
 
-    removeMovie(producerId: number, movieId: number): void {
-        const producer = this.producers.get(producerId);
-        if (producer) {
-            producer.movieIds = producer.movieIds.filter(id => id !== movieId);
+        if (!existing) {
+            this.db
+                .prepare('INSERT INTO movie_producers (movie_id, producer_id) VALUES (?, ?)')
+                .run(movieId, producerId);
         }
     }
 
+    removeMovie(producerId: number, movieId: number): void {
+        this.db
+            .prepare('DELETE FROM movie_producers WHERE movie_id = ? AND producer_id = ?')
+            .run(movieId, producerId);
+    }
+
     count(): number {
-        return this.producers.size;
+        const result = this.db.prepare('SELECT COUNT(*) as count FROM producers').get() as {
+            count: number;
+        };
+        return result.count;
     }
 
     clear(): void {
-        this.producers.clear();
-        this.producersNames.clear();
-        this.nextId = 1;
-    }  
-    
+        this.db.prepare('DELETE FROM producers').run();
+    }
+
+    private mapRowToProducer(row: { id: number; name: string }): Producer {
+        const movieIds = this.getMovieIdsForProducer(row.id);
+
+        return {
+            id: row.id,
+            name: row.name,
+            movieIds,
+        };
+    }
+
+    private getMovieIdsForProducer(producerId: number): number[] {
+        const rows = this.db
+            .prepare('SELECT movie_id FROM movie_producers WHERE producer_id = ?')
+            .all(producerId) as Array<{ movie_id: number }>;
+
+        return rows.map(row => row.movie_id);
+    }
 }

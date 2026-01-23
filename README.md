@@ -59,6 +59,8 @@ O produtor queganhou prêmios em 1990 e 1991 terá o intervalo de 1 ano. (1991 -
 
 **npm test**
 
+* Observação: Deixei o arquivo "Movielist2.csv" (a única mudança é na linha 57 onde o filme "The Adventures of Ford Fairlane" está como winner=no) na raíz do projeto para ser substituído como fonte no "DataLoader.ts" para poder testar a mudança de valores pertinentes a serem retornados no GET "/api/awards/award-intervals".
+
 
 
 ## Endpoints/Api:
@@ -157,6 +159,8 @@ Exemplo com response 200:
 - csv-parse: Biblioteca mais robusta e confiável para manipular arquivos csv.
 - Jest / TsJest: biblioteca completa para rodar e produzir testes com suporte a ts com compilação leve e performance ótima.
 - supertest: biblioteca que permite realizar testes Http sem o servidor estar rodando, e funciona muito bem com Jest.
+- Eslint / Prettier: melhor controle de identação, espaçamentos e legibilidade para o código.
+- Sqlite(memory): banco de dados com a opção dos dados serem armazenados apenas em memória ram, sem a necessidade de um disco, mas mantendo todo padrão de um banco normal, com tabelas, relações, consultas, inserções, deleções etc.
 
 
 ## Arquitetura:
@@ -169,4 +173,3 @@ Controllers/Routes: Recebe as requisições e retorna reposta em json.
 Services: Cálculos, regras e filtros.  
 Repositories: Acessa dados da memória e filtragem.  
 DataLoader: Carrega os dados do csv, faz parsing e normaliza valores, popula repositórios.  
-

@@ -1,6 +1,7 @@
 import { CsvLoaderService } from '../../src/services/CsvLoaderService';
 import { MovieRepository } from '../../src/repositories/MovieRepository';
 import { ProducerRepository } from '../../src/repositories/ProducerRepository';
+import { DatabaseMemory } from '../../src/database/Database';
 import fs from 'fs';
 import path from 'path';
 
@@ -8,19 +9,25 @@ describe('CsvLoaderService', () => {
     let csvLoaderService: CsvLoaderService;
     let movieRepository: MovieRepository;
     let producerRepository: ProducerRepository;
+    let database: DatabaseMemory;
 
     beforeEach(() => {
-        movieRepository = new MovieRepository();
-        producerRepository = new ProducerRepository();
+        database = new DatabaseMemory();
+        movieRepository = new MovieRepository(database.getDatabase());
+        producerRepository = new ProducerRepository(database.getDatabase());
         csvLoaderService = new CsvLoaderService(movieRepository, producerRepository);
+    });
+
+    afterEach(() => {
+        database.close();
     });
 
     describe('loadMoviesFromCsv', () => {
         it('deve carregar os dados corretamente do csv', () => {
             const filePath = path.resolve('Movielist.csv');
 
-            if(!fs.existsSync(filePath)){
-                throw new Error(`Arquivo não encontrado, pulando esse teste.`);
+            if (!fs.existsSync(filePath)) {
+                throw new Error('Arquivo não encontrado, pulando esse teste.');
                 return;
             }
 
@@ -39,7 +46,6 @@ describe('CsvLoaderService', () => {
 
     describe('parseWinner', () => {
         it('deve ser winner quando o valor for "yes"', () => {
-
             const csvContent = `year;title;studios;producers;winner
             2026;Piratas do Caribe;Disney;Jerry Bruckheimer;yes`;
 
@@ -56,7 +62,6 @@ describe('CsvLoaderService', () => {
         });
 
         it('deve ser winner quando o valor for "no"', () => {
-
             const csvContent = `year;title;studios;producers;winner
             2026;Piratas do Caribe;Disney;Jerry Bruckheimer;no`;
 
@@ -73,7 +78,6 @@ describe('CsvLoaderService', () => {
         });
 
         it('deve ser loser quando o valor for vazio', () => {
-
             const csvContent = `year;title;studios;producers;winner
             2026;Piratas do Caribe;Disney;Jerry Bruckheimer;`;
 

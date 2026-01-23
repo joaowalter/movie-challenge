@@ -2,8 +2,8 @@ export interface Producer {
     id: number;
     name: string;
     movieIds: number[];
-  }
-  
-  export interface ProducerToAdd {
+}
+
+export interface ProducerToAdd {
     name: string;
-  }
+}

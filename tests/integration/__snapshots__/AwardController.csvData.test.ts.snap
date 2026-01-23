@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`AwardController CSV Data GET /api/awards/award-intervals com dados do csv deve retornar valores específicos do csv, valida que o resultado não mudou com snapshot 1`] = `
+{
+  "max": [
+    {
+      "followingWin": 2015,
+      "interval": 13,
+      "previousWin": 2002,
+      "producer": "Matthew Vaughn",
+    },
+  ],
+  "min": [
+    {
+      "followingWin": 1991,
+      "interval": 1,
+      "previousWin": 1990,
+      "producer": "Joel Silver",
+    },
+  ],
+}
+`;
